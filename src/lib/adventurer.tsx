@@ -3,15 +3,18 @@ import { Attribute, Attributes } from './attribute'
 import { Race } from './race'
 import { ClassLevel } from './class'
 import { Armor, Armors } from './armor'
+import { Attack, Wepon, Wepons } from './wepon'
+import { Shield, isShield } from './shield'
 
-interface Health {
+type Health = {
   max: number,
   current: number
 }
 
-interface ArmorClass {
-  value: number,
-  armor: Armor
+type Equiptment = {
+  armor: Armor,
+  mainHand: Wepon,
+  offHand: Wepon | Shield
 }
 
 export class Adventurer {
@@ -22,7 +25,14 @@ export class Adventurer {
     max: 0,
     current: 0,
   }
-  private _armorClass: ArmorClass
+  private _armorClass: number
+  private _equiptment: Equiptment = {
+    armor: Armors.NONE,
+    mainHand: Wepons.UNARMED,
+    offHand: Wepons.UNARMED
+  }
+
+  private _baseAttack: Attack
 
   constructor(attributes: Attributes, race: Race, classes: ClassLevel[], armor?: Armor) {
     this._race = race
@@ -35,18 +45,17 @@ export class Adventurer {
     
     this.addClassLevels(...classes)
 
-    this._armorClass = {
-      value: Armors.NONE.formula(this._attributes),
-      armor: Armors.NONE,
-    }
+    this._armorClass = Armors.NONE.formula(this._attributes)
     if (armor) this.equipArmor(armor)
+
+    this._baseAttack = Wepons.UNARMED.attack
   }
 
   get ac() {
-    return this._armorClass.value
+    return this._armorClass
   }
   get armor() {
-    return this._armorClass.armor.name
+    return this._equiptment.armor
   }
   get attributes() {
     return this._attributes
@@ -64,8 +73,14 @@ export class Adventurer {
       .map(classLevel => classLevel.level as number)
       .reduce((prev, next) => prev + next) : 0
   }
+  get mainHand() {
+    return this._equiptment.mainHand
+  }
   get proficiency() {
     return Math.ceil((this.level/4)+1)
+  }
+  get offHand() {
+    return this._equiptment.offHand
   }
   get race() {
     return this._race.name
@@ -93,8 +108,15 @@ export class Adventurer {
   }
 
   equipArmor(armor: Armor) {
-    this._armorClass.value = armor.formula(this._attributes)
-    this._armorClass.armor = armor
+    const shieldBonus = (isShield(this.offHand)) ? this.offHand.shieldBonus : 0
+    this._armorClass = armor.formula(this._attributes) + shieldBonus
+    this._equiptment.armor = armor
+  }
+
+  unequipArmor() {
+    const shieldBonus = (isShield(this.offHand)) ? this.offHand.shieldBonus : 0
+    this._armorClass = Armors.NONE.formula(this._attributes) + shieldBonus
+    this._equiptment.armor = Armors.NONE
   }
 
 }
