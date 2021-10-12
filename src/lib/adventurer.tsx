@@ -64,6 +64,9 @@ export class Adventurer {
       .map(classLevel => classLevel.level as number)
       .reduce((prev, next) => prev + next) : 0
   }
+  get proficiency() {
+    return Math.ceil((this.level/4)+1)
+  }
   get race() {
     return this._race.name
   }

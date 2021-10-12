@@ -21,6 +21,7 @@ const logAdventurer = () => {
     ac,
     race,
     level,
+    proficiency,
     class: characterClass,
     attributes: {
       strength, dexterity, constitution, mind,
@@ -32,6 +33,7 @@ const logAdventurer = () => {
   console.log(`Hitpoints: ${current}/${max} | ArmorClass: ${ac}`)
   console.log(`Race: ${race} | Level: ${level} | Class: ${characterClass}`)
   console.log(`STR: ${strength}, DEX: ${dexterity}, CON: ${constitution}, MND: ${mind}`)
+  console.log(`Proficiency Bonus: ${proficiency}`)
   console.log(`Equipt Armor: ${armor}`)
 }
 
