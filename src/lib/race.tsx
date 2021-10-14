@@ -6,17 +6,13 @@ enum Size {
   LARGE,
 }
 
-enum Any {
-  ANY = 'any'
-}
-
-type BonusAttribute = Attribute | Any
+type BonusAttribute = Attribute
 
 export interface Race {
   name: string,
   attributeBonus: { attribute: BonusAttribute, bonus: number }[]
   size: Size,
-  abilities: [],
+  actions?: [],
   proficiencies: [],
 }
 
@@ -27,10 +23,12 @@ export class Races {
   static readonly HUMAN: Race = {
     name: 'human',
     attributeBonus: [
-      {attribute: Any.ANY, bonus: 2}
+      {attribute: Attribute.STR, bonus: 1},
+      {attribute: Attribute.DEX, bonus: 1},
+      {attribute: Attribute.CON, bonus: 1},
+      {attribute: Attribute.MND, bonus: 1},
     ],
     size: Size.MEDIUM,
-    abilities: [],
     proficiencies: [],
   }
   static readonly DWARF: Race = {
@@ -40,27 +38,33 @@ export class Races {
       {attribute: Attribute.MND, bonus: 1},
     ],
     size: Size.MEDIUM,
-    abilities: [],
     proficiencies: [],
   }
   static readonly ELF: Race = {
     name: 'elf',
     attributeBonus: [
-      {attribute: Attribute.MND, bonus: 2},
-      {attribute: Attribute.DEX, bonus: 1},
+      {attribute: Attribute.DEX, bonus: 2},
+      {attribute: Attribute.MND, bonus: 1},
     ],
     size: Size.MEDIUM,
-    abilities: [],
     proficiencies: [],
   }
   static readonly ORC: Race = {
     name: 'orc',
     attributeBonus: [
       {attribute: Attribute.STR, bonus: 2},
-      {attribute: Attribute.DEX, bonus: 1},
+      {attribute: Attribute.CON, bonus: 1},
     ],
     size: Size.MEDIUM,
-    abilities: [],
+    proficiencies: [],
+  }
+  static readonly GNOME: Race = {
+    name: 'gnome',
+    attributeBonus: [
+      {attribute: Attribute.MND, bonus: 2},
+      {attribute: Attribute.CON, bonus: 1},
+    ],
+    size: Size.SMALL,
     proficiencies: [],
   }
   static readonly HALFLING: Race = {
@@ -69,8 +73,7 @@ export class Races {
       {attribute: Attribute.DEX, bonus: 2},
       {attribute: Attribute.CON, bonus: 1},
     ],
-    size: Size.MEDIUM,
-    abilities: [],
+    size: Size.SMALL,
     proficiencies: [],
   }
 

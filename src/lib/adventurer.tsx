@@ -1,10 +1,11 @@
 import dice, { d } from './dice'
 import { Attribute, Attributes } from './attribute'
 import { Race } from './race'
-import { ClassLevel } from './class'
+import { Class, ClassLevel } from './class'
 import { Armor, Armors } from './armor'
-import { Attack, Wepon, Wepons } from './wepon'
+import { Wepon, WeponHand, Wepons } from './wepon'
 import { Shield, isShield } from './shield'
+import { Action, Origin } from './action'
 
 type Health = {
   max: number,
@@ -25,34 +26,39 @@ export class Adventurer {
     max: 0,
     current: 0,
   }
-  private _armorClass: number
   private _equiptment: Equiptment = {
     armor: Armors.NONE,
     mainHand: Wepons.UNARMED,
     offHand: Wepons.UNARMED
   }
 
-  private _baseAttack: Attack
-
-  constructor(attributes: Attributes, race: Race, classes: ClassLevel[], armor?: Armor) {
+  constructor(attributes: Attributes, race: Race, classes: ClassLevel[]) {
     this._race = race
-
-    race.attributeBonus.forEach(bonus => {
-      const attr = (bonus.attribute !== 'any') ? bonus.attribute : Attribute.STR
-      attributes.setAttribute(attr, attributes.getAttribute(attr)+bonus.bonus)
+    race.attributeBonus.forEach(attributeBonus => {
+      const { attribute, bonus } = attributeBonus
+      attributes.setAttribute(attribute, attributes.getAttribute(attribute)+bonus)
     })
     this._attributes = attributes
-    
     this.addClassLevels(...classes)
-
-    this._armorClass = Armors.NONE.formula(this._attributes)
-    if (armor) this.equipArmor(armor)
-
-    this._baseAttack = Wepons.UNARMED.attack
+    this.equipArmor(Armors.NONE)
+    this.equipMainHand(Wepons.UNARMED)
+    this.equipOffHand(Wepons.UNARMED)
   }
 
   get ac() {
-    return this._armorClass
+    const shieldBonus = (isShield(this.offHand)) ? this.offHand.shieldBonus : 0
+    return this.armor.formula(this.attributes) + shieldBonus
+  }
+  get actions() {
+    const classes: Class[] = this._classes.map(classLevel => classLevel.class)
+    const sources: Origin[] = [this._race, this.mainHand, this.offHand, ...classes,]
+    const actions: Set<Action> = new Set()
+    sources.forEach(source => {
+      if (source.actions) source.actions.forEach(action => {
+        if (action.condition(this)) actions.add(action)
+      })
+    })
+    return Array.from(actions)
   }
   get armor() {
     return this._equiptment.armor
@@ -64,6 +70,10 @@ export class Adventurer {
     return  this._classes
       .map(classLevel => `${classLevel.class.name} ${classLevel.level}`)
       .join(' / ')
+  }
+  get classes() {
+    return  this._classes
+      .reduce((classes: {[key: string]: number}, characterClass: ClassLevel) => (classes[characterClass.class.name] = characterClass.level, classes), {})
   }
   get health() {
     return this._health
@@ -108,15 +118,33 @@ export class Adventurer {
   }
 
   equipArmor(armor: Armor) {
-    const shieldBonus = (isShield(this.offHand)) ? this.offHand.shieldBonus : 0
-    this._armorClass = armor.formula(this._attributes) + shieldBonus
     this._equiptment.armor = armor
   }
 
   unequipArmor() {
-    const shieldBonus = (isShield(this.offHand)) ? this.offHand.shieldBonus : 0
-    this._armorClass = Armors.NONE.formula(this._attributes) + shieldBonus
-    this._equiptment.armor = Armors.NONE
+    this.equipArmor(Armors.NONE)
+  }
+
+  equipMainHand(wepon: Wepon) {
+    if (wepon !== Wepons.UNARMED) this.unequipMainHand()
+    this._equiptment.mainHand = wepon
+    if (wepon.hand === WeponHand.TWO) {
+      this.unequipOffHand()
+      this._equiptment.offHand = wepon
+    }
+  }
+
+  equipOffHand(item: Wepon | Shield) {
+    if (item !== Wepons.UNARMED) this.unequipOffHand()
+    this._equiptment.offHand = item
+  }
+
+  unequipMainHand() {
+    this.equipMainHand(Wepons.UNARMED)
+  }
+
+  unequipOffHand() {
+    this.equipOffHand(Wepons.UNARMED)
   }
 
 }

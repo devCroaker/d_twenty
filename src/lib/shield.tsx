@@ -1,7 +1,10 @@
+import { Action } from "./action"
+
 export interface Shield {
   name: string,
   value: number,
   shieldBonus: number,
+  actions?: Action[],
 }
 
 export const isShield = (obj: any): obj is Shield => obj.shieldBonus !== undefined
