@@ -6,57 +6,22 @@ import { Classes } from './lib/class'
 import { Armors } from './lib/armor'
 import { Wepons } from './lib/wepon'
 import { Shields } from './lib/shield'
-import { d } from './lib/dice'
+import { d, DiceNotation } from './lib/dice'
 import { grid } from './map/map'
 
+const statDice: DiceNotation = {number: 3, dice: 6}
 const adventurer = new Adventurer(
-  new Attributes(d(3,6), d(3,6), d(3,6), d(3,6)),
+  new Attributes(d(statDice), d(statDice), d(statDice), d(statDice)),
   Races.HUMAN,
-  [{level: 1, class: Classes.FIGHTER}]
+  Classes.FIGHTER
 )
 
-const logAdventurer = () => {
-  const {
-    health: {
-      current, max
-    },
-    ac,
-    race,
-    level,
-    proficiency,
-    class: characterClass,
-    attributes: {
-      strength, dexterity, constitution, mind,
-    },
-    armor,
-    mainHand,
-    offHand
-  } = adventurer
-
-  console.log(`---------------------------------------------------------`)
-  console.log(`The current adventurer`)
-  console.log(`Hitpoints: ${current}/${max} | ArmorClass: ${ac}`)
-  console.log(`Race: ${race} | Level: ${level} | Class: ${characterClass}`)
-  console.log(`STR: ${strength}, DEX: ${dexterity}, CON: ${constitution}, MND: ${mind}`)
-  console.log(`Proficiency Bonus: ${proficiency}`)
-  console.log(`Equipt Armor: ${armor.name}`)
-  console.log(`Equipt MainHand: ${mainHand.name}`)
-  console.log(`Equipt OffHand: ${offHand.name}`)
-  console.log(adventurer.actions)
-  console.log(`---------------------------------------------------------`)
-}
-
-logAdventurer()
+adventurer.log()
 adventurer.addClassLevels({level: 1, class: Classes.WIZARD}, {level: 2, class: Classes.FIGHTER})
 adventurer.equipArmor(Armors.BREASTPLATE)
 adventurer.equipMainHand(Wepons.LONGSWORD)
-logAdventurer()
 adventurer.equipOffHand(Shields.SHIELD)
-logAdventurer()
-adventurer.unequipArmor()
-logAdventurer()
-adventurer.unequipOffHand()
-logAdventurer()
+adventurer.log()
 
 ;(window as any).adventurer = adventurer
 

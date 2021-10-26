@@ -11,11 +11,21 @@ export enum ActionType {
     MAIN,
 }
 
+export enum ActionProviders {
+  RACE = 'race',
+  CLASS = 'class',
+  MAINHAND = 'mainhand',
+  OFFHAND = 'offhand',
+  ARMOR = 'armor',
+}
+
 export interface Action {
     name: String,
     description: String,
     type: ActionType,
-    attack?: Attack
+    attack?: Attack,
+    effect?: (adventurer: Adventurer) => void
     cost?: number,
-    condition: (adventurer: Adventurer) => Boolean,
 }
+
+export type Actions = {[key in ActionProviders]?: Action[]}

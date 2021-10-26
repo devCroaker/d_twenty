@@ -1,5 +1,3 @@
-import { Attribute, Attributes } from './attribute'
-
 enum ArmorType {
   LIGHT,
   MEDIUM,
@@ -11,7 +9,8 @@ export interface Armor {
   type: ArmorType,
   minStrength: number,
   value: number,
-  formula: (attributes: Attributes) => number,
+  baseAc: number, //AC given above ten
+  maxDex: number,
 }
 
 export class Armors {
@@ -23,7 +22,8 @@ export class Armors {
     type: ArmorType.LIGHT,
     minStrength: 0,
     value: 0,
-    formula: (attributes: Attributes) => 10 + attributes.getBonus(Attribute.DEX),
+    baseAc: 0,
+    maxDex: 10,
   }
 
   static readonly LEATHER: Armor = {
@@ -31,7 +31,8 @@ export class Armors {
     type: ArmorType.LIGHT,
     minStrength: 0,
     value: 10,
-    formula: (attributes: Attributes) => 11 + attributes.getBonus(Attribute.DEX),
+    baseAc: 1,
+    maxDex: 10,
   }
 
   static readonly BREASTPLATE: Armor = {
@@ -39,7 +40,8 @@ export class Armors {
     type: ArmorType.MEDIUM,
     minStrength: 0,
     value: 400,
-    formula: (attributes: Attributes) => 14 + Math.min(2, attributes.getBonus(Attribute.DEX)),
+    baseAc: 4,
+    maxDex: 2,
   }
 
   static readonly PLATE: Armor = {
@@ -47,7 +49,8 @@ export class Armors {
     type: ArmorType.HEAVY,
     minStrength: 15,
     value: 1500,
-    formula: (attributes: Attributes) => 18,
+    baseAc: 8,
+    maxDex: 0,
   }
 
   private constructor(private readonly armor: Armor) {}

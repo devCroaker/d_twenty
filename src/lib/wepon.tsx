@@ -1,30 +1,33 @@
-import { Action, ActionType } from "./action"
-import { Adventurer } from "./adventurer"
-import { Attribute, Attributes } from "./attribute"
-import { d } from './dice'
+import { Action, Actions, ActionType } from "./action"
+import { DiceNotation } from './dice'
 
-enum WeponType {
+export enum WeponType {
     SIMPLE,
     MARTIAL,
     EXOTIC,
 }
-enum DamageType {
-    PIERCING,
-    BLUDGEONING,
-    SLASHING,
+export enum DamageType {
+    PIERCING = "piercing",
+    BLUDGEONING = "bludgeoning",
+    SLASHING = "slashing",
 }
 export enum WeponHand {
     MAIN,
     ONE,
     TWO,
 }
+export enum AttackType {
+    MELEE = "melee",
+    FINESS = "finess",
+    RANGED = "ranged",
+    SPELL = "spell",
+}
 
 export interface Attack {
-    range: boolean,
     damageType: DamageType,
     magical: boolean,
-    toHit: (proficiency: number, attributes: Attributes) => number,
-    damage: (attributes: Attributes) => number,
+    attackType: AttackType
+    damage: DiceNotation,
 }
 
 export interface Wepon {
@@ -33,7 +36,7 @@ export interface Wepon {
     hand: WeponHand,
     value: number,
     attack?: Action,
-    actions?: Action[],
+    actions?: Actions,
 }
 
 export class Wepons {
@@ -48,28 +51,26 @@ export class Wepons {
             name: 'Unarmed Strike',
             description: 'A quick strick with your mainhand',
             type: ActionType.MAIN,
-            condition: (adventurer: Adventurer) => adventurer.mainHand === Wepons.UNARMED,
             attack: {
-                range: false,
                 damageType: DamageType.BLUDGEONING,
                 magical: false,
-                toHit: (proficiency: number, attributes: Attributes) => proficiency + attributes.getBonus(Attribute.STR),
-                damage: (attribute: Attributes) => 1 + attribute.getBonus(Attribute.STR)
+                attackType: AttackType.MELEE,
+                damage: {number: 1, dice: 1}
             }
         },
-        actions: [{
-            name: 'Unarmed Strike - OffHand',
-            description: 'A quick strick with your offhand',
-            type: ActionType.BONUS,
-            condition: (adventurer: Adventurer) => adventurer.offHand === Wepons.UNARMED,
-            attack: {
-                range: false,
-                damageType: DamageType.BLUDGEONING,
-                magical: false,
-                toHit: (proficiency: number, attributes: Attributes) => proficiency + attributes.getBonus(Attribute.STR),
-                damage: (attribute: Attributes) => 1
-            }
-        }]
+        actions: {
+            offhand: [{
+                name: 'Unarmed Strike - OffHand',
+                description: 'A quick strick with your offhand',
+                type: ActionType.BONUS,
+                attack: {
+                    damageType: DamageType.BLUDGEONING,
+                    magical: false,
+                    attackType: AttackType.MELEE,
+                    damage: {number: 1, dice: 1}
+                }
+            }]
+        }
     }
 
     static readonly LONGSWORD: Wepon = {
@@ -81,13 +82,11 @@ export class Wepons {
             name: 'Longsword Attack',
             description: 'An attack with your longsword',
             type: ActionType.MAIN,
-            condition: (adventurer: Adventurer) => adventurer.mainHand === Wepons.LONGSWORD,
             attack: {
-                range: false,
                 damageType: DamageType.SLASHING,
                 magical: false,
-                toHit: (proficiency: number, attributes: Attributes) => proficiency + attributes.getBonus(Attribute.STR),
-                damage: (attribute: Attributes) => d(1,8) + attribute.getBonus(Attribute.STR)
+                attackType: AttackType.MELEE,
+                damage: {number: 1, dice: 8}
             }
         },
     }
