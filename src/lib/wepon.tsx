@@ -1,5 +1,8 @@
-import { Action, Actions, ActionType } from "./action"
+import { Action, Actions, ActionType, EffectType, Targets } from "./action"
+import { Adventurer } from "./adventurer"
 import { AttackType, DamageType, Attack } from './attack'
+import { Attribute } from "./attribute"
+import { d } from "./dice"
 
 export enum WeponType {
     SIMPLE,
@@ -31,21 +34,47 @@ export class Wepons {
         hand: WeponHand.ONE,
         value: 0,
         attack: {
+            type: EffectType.ATTACK,
+            targets: [Targets.ENEMY],
             damageType: DamageType.BLUDGEONING,
             magical: false,
-            attackType: AttackType.MELEE,
-            damage: {number: 1, dice: 1}
+            attackType: AttackType.FINESS,
+            damage: {number: 1, dice: 1},
+            effect: (source: Adventurer, target: Adventurer) => {
+                let str = source.attributes.getBonus(Attribute.STR),
+                    dex = source.attributes.getBonus(Attribute.DEX),
+                    die = {
+                        ...this.damage,
+                        bonus: Math.max(str, dex)
+                    },
+                    damage = d(die)
+                target.damage(damage)
+            },
         },
         actions: {
             offhand: [{
+
+                
                 name: 'Unarmed Strike - OffHand',
                 description: 'A quick strick with your offhand',
                 type: ActionType.BONUS,
-                attack: {
+                effect: {
+                    type: EffectType.ATTACK,
+                    targets: [Targets.ENEMY],
                     damageType: DamageType.BLUDGEONING,
                     magical: false,
-                    attackType: AttackType.MELEE,
-                    damage: {number: 1, dice: 1}
+                    attackType: AttackType.FINESS,
+                    damage: {number: 1, dice: 1},
+                    effect: (source: Adventurer, target: Adventurer) => {
+                        let str = source.attributes.getBonus(Attribute.STR),
+                            dex = source.attributes.getBonus(Attribute.DEX),
+                            die = {
+                                ...this.damage,
+                                bonus: Math.max(str, dex)
+                            },
+                            damage = d(die)
+                        target.damage(damage)
+                    },
                 }
             }]
         },

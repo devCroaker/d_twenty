@@ -26,16 +26,21 @@ export enum Targets {
   ENEMY,
 }
 
+export enum EffectType {
+  ATTACK,
+  HEAL,
+}
+
 export interface Effect {
+  type: EffectType
   targets: Targets[]
-  effect: (adventurer: Adventurer) => void
+  effect: (source: Adventurer, target: Adventurer) => void
 }
 
 export interface Action {
     name: String,
     description: String,
     type: ActionType,
-    attack?: Attack,
     effect?: Effect
     cost?: number,
 }
