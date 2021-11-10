@@ -1,4 +1,4 @@
-import { Action, ActionType } from './action'
+import { Action, ActionType, Targets } from './action'
 import { Adventurer } from './adventurer'
 import { d, dice, DiceNotation } from './dice'
 
@@ -29,10 +29,16 @@ export class Classes {
           name: 'Second Wind',
           description: 'Draw upon a well of stamina to recover from combat',
           type: ActionType.BONUS,
-          effect: (adventurer: Adventurer) => {
-            const die: DiceNotation = {number: 1, dice: 10},
-              fighterLevel = adventurer.classes?.fighter
-            adventurer.heal(d(die) + fighterLevel)
+          effect: {
+            targets: [Targets.SELF],
+            effect: (adventurer: Adventurer) => {
+              const die: DiceNotation = {
+                number: 1,
+                dice: 10,
+                bonus: adventurer.classes?.fighte
+              }
+              adventurer.heal(d(die))
+            }
           }
         }]
       }

@@ -3,9 +3,10 @@ import { Attribute, Attributes } from './attribute'
 import { Race } from './race'
 import { Class, Level } from './class'
 import { Armor, Armors } from './armor'
-import { AttackType, DamageType, Wepon, WeponHand, Wepons, WeponType } from './wepon'
+import { Wepon, WeponHand, Wepons, WeponType } from './wepon'
 import { Shield, isShield } from './shield'
 import { Action, Actions } from './action'
+import { AttackType, DamageType } from './attack'
 
 interface Health {
   max: number,
@@ -84,7 +85,7 @@ export class Adventurer {
   }
 
   get class() {
-    return  this._classes
+    return this._classes
       .map(classLevel => `${classLevel.class.name} ${classLevel.level}`)
       .join(' / ')
   }

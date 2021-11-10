@@ -2,13 +2,15 @@ export type dice = 1|2|4|6|8|10|12|20|100
 
 export interface DiceNotation {
   number: number,
-  dice: dice
+  dice: dice,
+  bonus?: number
 }
 
 export function d(notation: DiceNotation) {
-  const { number, dice } = notation
+  const { number, dice, bonus = 0 } = notation
   let total = 0
   for (let i = 0; i < number; i++) total += Math.floor(Math.random()*dice)+1
+  total += bonus
   console.log(`rolled ${number}d${dice} and got: ${total}`)
   return total
 }

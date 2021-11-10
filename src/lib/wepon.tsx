@@ -1,33 +1,16 @@
 import { Action, Actions, ActionType } from "./action"
-import { DiceNotation } from './dice'
+import { AttackType, DamageType, Attack } from './attack'
 
 export enum WeponType {
     SIMPLE,
     MARTIAL,
     EXOTIC,
 }
-export enum DamageType {
-    PIERCING = "piercing",
-    BLUDGEONING = "bludgeoning",
-    SLASHING = "slashing",
-}
+
 export enum WeponHand {
     MAIN,
     ONE,
     TWO,
-}
-export enum AttackType {
-    MELEE = "melee",
-    FINESS = "finess",
-    RANGED = "ranged",
-    SPELL = "spell",
-}
-
-export interface Attack {
-    damageType: DamageType,
-    magical: boolean,
-    attackType: AttackType
-    damage: DiceNotation,
 }
 
 export interface Wepon {
@@ -35,7 +18,7 @@ export interface Wepon {
     type: WeponType,
     hand: WeponHand,
     value: number,
-    attack?: Action,
+    attack?: Attack,
     actions?: Actions,
 }
 
@@ -48,15 +31,10 @@ export class Wepons {
         hand: WeponHand.ONE,
         value: 0,
         attack: {
-            name: 'Unarmed Strike',
-            description: 'A quick strick with your mainhand',
-            type: ActionType.MAIN,
-            attack: {
-                damageType: DamageType.BLUDGEONING,
-                magical: false,
-                attackType: AttackType.MELEE,
-                damage: {number: 1, dice: 1}
-            }
+            damageType: DamageType.BLUDGEONING,
+            magical: false,
+            attackType: AttackType.MELEE,
+            damage: {number: 1, dice: 1}
         },
         actions: {
             offhand: [{
@@ -70,7 +48,7 @@ export class Wepons {
                     damage: {number: 1, dice: 1}
                 }
             }]
-        }
+        },
     }
 
     static readonly LONGSWORD: Wepon = {
@@ -79,15 +57,10 @@ export class Wepons {
         hand: WeponHand.MAIN,
         value: 15,
         attack: {
-            name: 'Longsword Attack',
-            description: 'An attack with your longsword',
-            type: ActionType.MAIN,
-            attack: {
-                damageType: DamageType.SLASHING,
-                magical: false,
-                attackType: AttackType.MELEE,
-                damage: {number: 1, dice: 8}
-            }
+            damageType: DamageType.SLASHING,
+            magical: false,
+            attackType: AttackType.MELEE,
+            damage: {number: 1, dice: 8}
         },
     }
 
